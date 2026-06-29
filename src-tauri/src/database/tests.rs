@@ -741,6 +741,25 @@ fn schema_model_pricing_is_seeded_on_init() {
         "应该包含 Gemini 模型定价，实际数量: {}",
         gemini_count
     );
+
+    let mimo_v2_omni: (String, String, String, String) = conn
+        .query_row(
+            "SELECT input_cost_per_million, output_cost_per_million,
+                    cache_read_cost_per_million, cache_creation_cost_per_million
+             FROM model_pricing WHERE model_id = 'mimo-v2-omni'",
+            [],
+            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?, row.get(3)?)),
+        )
+        .expect("query MiMo V2 Omni price");
+    assert_eq!(
+        mimo_v2_omni,
+        (
+            "0.15".to_string(),
+            "0.29".to_string(),
+            "0.0029".to_string(),
+            "0".to_string()
+        )
+    );
 }
 
 #[test]
